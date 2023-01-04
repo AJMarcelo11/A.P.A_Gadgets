@@ -1,97 +1,103 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Apa Gadgets | Store</title>
-        <meta name="description" content="This is the description">
-        <link rel="stylesheet" href="styles.css" />
-        <script src="store.js" async></script>
-    </head>
-    <body>
-        <header class="main-header">
-            <nav class="main-nav nav">
-                <ul>
-                    <li><a href="index.html">HOME</a></li>
-                    <li><a href="store.html">STORE</a></li>
+if (document.readyState == 'loading') {
+    document.addEventListener('DOMContentLoaded', ready)
+} else {
+    ready()
+}
 
-                </ul>
-            </nav>
-<marquee behavior="scroll" direction="down" scrollamount="4">
-            <h1 class="band-name band-name-large">Apa Gadgets</h1>
-</marquee>
-        </header>
-        <section class="container content-section">
-            <h2 class="section-header">GADGETS</h2>
-            <div class="shop-items">
-                <div class="shop-item">
-                    <span class="shop-item-title">Brand: HP Laptop</span>
-                    <img class="shop-item-image" src="Images/lp1.jpg">
-                    <div class="shop-item-details">
-                        <span class="shop-item-price">$230</span>
-                        <button class="btn btn-primary shop-item-button" type="button">ADD TO CART</button>
-                    </div>
-                </div>
-                <div class="shop-item">
-                    <span class="shop-item-title">Acer Laptop</span>
-                    <img class="shop-item-image" src="Images/lp2.jpg">
-                    <div class="shop-item-details">
-                        <span class="shop-item-price">$270</span>
-                        <button class="btn btn-primary shop-item-button"type="button">ADD TO CART</button>
-                    </div>
-                </div>
-                <div class="shop-item">
-                    <span class="shop-item-title">Cherry Mobile Aqua s10 pro</span>
-                    <img class="shop-item-image" src="Images/cp1.jpg">
-                    <div class="shop-item-details">
-                        <span class="shop-item-price">$150</span>
-                        <button class="btn btn-primary shop-item-button" type="button">ADD TO CART</button>
-                    </div>
-                </div>
-                <div class="shop-item">
-                    <span class="shop-item-title">CloudFone Thrill 430x</span>
-                    <img class="shop-item-image" src="Images/cp2.webp">
-                    <div class="shop-item-details">
-                        <span class="shop-item-price">$140</span>
-                        <button class="btn btn-primary shop-item-button" type="button">ADD TO CART</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <section class="container content-section">
-            <h2 class="section-header">CART</h2>
-            <div class="cart-row">
-                <span class="cart-item cart-header cart-column">ITEM</span>
-                <span class="cart-price cart-header cart-column">PRICE</span>
-                <span class="cart-quantity cart-header cart-column">QUANTITY</span>
-            </div>
-            <div class="cart-items">
-            </div>
-            <div class="cart-total">
-                <strong class="cart-total-title">Total</strong>
-                <span class="cart-total-price">$0</span>
-            </div>
-            <center><a href="payment.html" style="vertical-align: middle;padding: .67em .67em;cursor: pointer;color: white;background-color: #56CCF2;border: none;border-radius: .3em;font-weight: bold;margin: 40px auto 80px auto;font-size: 1.50em;">PURCHASE</a> 
-        </section>
-        <footer class="main-footer">
-            <div class="container main-footer-container">
-                <h3 class="band-name">The Generics</h3>
-                <ul class="nav footer-nav">
-                    <li>
-                        <a href="https://www.youtube.com" target="_blank">
-                            <img src="Images/Youtube Logo.png">
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://www.spotify.com" target="_blank">
-                            <img src="Images/Spotify Logo.png">
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://www.facebook.com" target="_blank">
-                            <img src="Images/Facebook Logo.png">
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </footer>
-    </body>
-</html>
+function ready() {
+    var removeCartItemButtons = document.getElementsByClassName('btn-danger')
+    for (var i = 0; i < removeCartItemButtons.length; i++) {
+        var button = removeCartItemButtons[i]
+        button.addEventListener('click', removeCartItem)
+    }
+
+    var quantityInputs = document.getElementsByClassName('cart-quantity-input')
+    for (var i = 0; i < quantityInputs.length; i++) {
+        var input = quantityInputs[i]
+        input.addEventListener('change', quantityChanged)
+    }
+
+    var addToCartButtons = document.getElementsByClassName('shop-item-button')
+    for (var i = 0; i < addToCartButtons.length; i++) {
+        var button = addToCartButtons[i]
+        button.addEventListener('click', addToCartClicked)
+    }
+
+    document.getElementsByClassName('btn-purchase')[0].addEventListener('click', purchaseClicked)
+}
+
+function purchaseClicked() {
+
+    var cartItems = document.getElementsByClassName('cart-items')[0]
+    while (cartItems.hasChildNodes()) {
+        cartItems.removeChild(cartItems.firstChild)
+    }
+    updateCartTotal()
+}
+
+function removeCartItem(event) {
+    var buttonClicked = event.target
+    buttonClicked.parentElement.parentElement.remove()
+    updateCartTotal()
+}
+
+function quantityChanged(event) {
+    var input = event.target
+    if (isNaN(input.value) || input.value <= 0) {
+        input.value = 1
+    }
+    updateCartTotal()
+}
+
+function addToCartClicked(event) {
+    var button = event.target
+    var shopItem = button.parentElement.parentElement
+    var title = shopItem.getElementsByClassName('shop-item-title')[0].innerText
+    var price = shopItem.getElementsByClassName('shop-item-price')[0].innerText
+    var imageSrc = shopItem.getElementsByClassName('shop-item-image')[0].src
+    addItemToCart(title, price, imageSrc)
+    updateCartTotal()
+}
+
+function addItemToCart(title, price, imageSrc) {
+    var cartRow = document.createElement('div')
+    cartRow.classList.add('cart-row')
+    var cartItems = document.getElementsByClassName('cart-items')[0]
+    var cartItemNames = cartItems.getElementsByClassName('cart-item-title')
+    for (var i = 0; i < cartItemNames.length; i++) {
+        if (cartItemNames[i].innerText == title) {
+            alert('This item is already added to the cart')
+            return
+        }
+    }
+    var cartRowContents = `
+        <div class="cart-item cart-column">
+            <img class="cart-item-image" src="${imageSrc}" width="100" height="100">
+            <span class="cart-item-title">${title}</span>
+        </div>
+        <span class="cart-price cart-column">${price}</span>
+        <div class="cart-quantity cart-column">
+            <input class="cart-quantity-input" type="number" value="1">
+            <button class="btn btn-danger" type="button">REMOVE</button>
+        </div>`
+    cartRow.innerHTML = cartRowContents
+    cartItems.append(cartRow)
+    cartRow.getElementsByClassName('btn-danger')[0].addEventListener('click', removeCartItem)
+    cartRow.getElementsByClassName('cart-quantity-input')[0].addEventListener('change', quantityChanged)
+}
+
+function updateCartTotal() {
+    var cartItemContainer = document.getElementsByClassName('cart-items')[0]
+    var cartRows = cartItemContainer.getElementsByClassName('cart-row')
+    var total = 0
+    for (var i = 0; i < cartRows.length; i++) {
+        var cartRow = cartRows[i]
+        var priceElement = cartRow.getElementsByClassName('cart-price')[0]
+        var quantityElement = cartRow.getElementsByClassName('cart-quantity-input')[0]
+        var price = parseFloat(priceElement.innerText.replace('$', ''))
+        var quantity = quantityElement.value
+        total = total + (price * quantity)
+    }
+    total = Math.round(total * 100) / 100
+    document.getElementsByClassName('cart-total-price')[0].innerText = '$' + total
+}
